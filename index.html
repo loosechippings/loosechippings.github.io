@@ -58,7 +58,7 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.json("https://api.thingspeak.com/channels/23684/feed.json?key=U7DK96434PG4VW53&days=7", function(error, jsondata) {
+d3.json("https://api.thingspeak.com/channels/23684/feed.json?key=UZNQFPQFAG9A58ZG&days=7", function(error, jsondata) {
   data=jsondata.feeds;
   console.log(data);
   data.forEach(function(d) {
