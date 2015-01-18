@@ -24,8 +24,8 @@ body {
 }
 
 .node {
-  stroke: steelblue;
-  fill: steelblue;
+  stroke: #FF6600;
+  fill: #FF6600;
 }
 
 </style>
@@ -95,7 +95,7 @@ d3.json("https://api.thingspeak.com/channels/23684/feed.json?key=UZNQFPQFAG9A58Z
       .attr("class", "line")
       .attr("d", line);
 
-  svg.selectAll("circle").data(data).enter().append("circle")
+  nodes=svg.selectAll("circle").data(data).enter().append("circle")
     .attr("cx",function(d) {return x(d.created_at)})
     .attr("cy",function(d) {return y(d.field1)})
     .attr("class","node")
@@ -107,7 +107,7 @@ d3.json("https://api.thingspeak.com/channels/23684/feed.json?key=UZNQFPQFAG9A58Z
     .on("mouseout",function(d,i) {
       d3.select(this).style("opacity",0);
     });
-    
+
 });
 
 </script>
