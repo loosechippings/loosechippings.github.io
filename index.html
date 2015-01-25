@@ -75,14 +75,12 @@ var line = d3.svg.line()
 
 var boiler_line = d3.svg.line()
     .x(function(d) { return x(d.created_at); })
-    .y(function(d) { return boiler_y(d.field3); })
-    .interpolate("step-before");
+    .y(function(d) { return boiler_y(d.field3); });
 
 var boiler_area = d3.svg.area()
   .x(function(d) {return x(d.created_at)})
   .y0(height)
-  .y1(function(d) {return boiler_y(d.field3)})
-  .interpolate("step-before");
+  .y1(function(d) {return boiler_y(d.field3)});
 
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -90,7 +88,7 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.json("https://api.thingspeak.com/channels/23684/feed.json?key=UZNQFPQFAG9A58ZG&results=100&round=1", function(error, jsondata) {
+d3.json("https://api.thingspeak.com/channels/23684/feed.json?key=UZNQFPQFAG9A58ZG&days=1", function(error, jsondata) {
 
   data=jsondata.feeds;
 
