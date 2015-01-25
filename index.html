@@ -32,8 +32,8 @@ body {
 }
 
 .node {
-  stroke: #FF6600;
-  fill: #FF6600;
+  stroke: #333399;
+  fill: #333399;
   font: 15px sans-serif;
 }
 
@@ -162,7 +162,8 @@ d3.json("https://api.thingspeak.com/channels/23684/feed.json?key=UZNQFPQFAG9A58Z
   .text(function(d) {
     return d.field1;
   })
-  .attr("x",10);
+  .attr("y","-1em")
+  .attr("x","-.8em");
 
   nodes.append("circle")
     .attr("cx",-2)
