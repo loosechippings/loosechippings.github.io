@@ -23,10 +23,11 @@ body {
   stroke-width: 1.5px;
 }
 
-.boiler_line {
-  fill: none;
-  stroke: red;
+.area, .boiler_line {
+  fill: #FF3300;
+  stroke: #FF3300;
   stroke-width: 1.5px;
+  fill-opacity: 0.5;
 }
 
 .node {
@@ -74,7 +75,14 @@ var line = d3.svg.line()
 
 var boiler_line = d3.svg.line()
     .x(function(d) { return x(d.created_at); })
-    .y(function(d) { return boiler_y(d.field3); });
+    .y(function(d) { return boiler_y(d.field3); })
+    .interpolate("step-before");
+
+var boiler_area = d3.svg.area()
+  .x(function(d) {return x(d.created_at)})
+  .y0(height)
+  .y1(function(d) {return boiler_y(d.field3)})
+  .interpolate("step-before");
 
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -132,6 +140,11 @@ d3.json("https://api.thingspeak.com/channels/23684/feed.json?key=UZNQFPQFAG9A58Z
       .datum(data)
       .attr("class", "boiler_line")
       .attr("d", boiler_line);
+
+  svg.append("path")
+      .datum(data)
+      .attr("class","area")
+      .attr("d",boiler_area);
 
   nodes=svg.selectAll(".node").data(data).enter().append("g")
     .attr("transform",function(d) {
