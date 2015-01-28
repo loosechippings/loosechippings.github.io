@@ -6,6 +6,11 @@ body {
   font: 10px sans-serif;
 }
 
+.summary {
+  font: 36px sans-serif;
+  text-align: left;
+}
+
 .axis path,
 .axis line {
   fill: none;
@@ -105,6 +110,8 @@ d3.json("https://api.thingspeak.com/channels/23684/feed.json?key=UZNQFPQFAG9A58Z
     d.field3 = +d.field3;
   });
 
+  calculateTotalMinutes(data);
+
   x.domain(d3.extent(data, function(d) { return d.created_at; }));
   y.domain([-5,20]);
   boiler_y.domain([0,1]);
@@ -176,10 +183,25 @@ d3.json("https://api.thingspeak.com/channels/23684/feed.json?key=UZNQFPQFAG9A58Z
     .attr("r",5);
 
 
+  todayText=d3.select("body")
+    .append("p")
+    .attr("class","summary")
+    .text("test");
+
+  var foo=calculateTotalMinutes(data);
+
+  todayText.text("minutes today "+calculateTotalMinutes(data));
 });
+
 
 //setInterval(function() {
 //  console.log("ping");
 //},1000);
+
+function calculateTotalMinutes(data) {
+  return data.reduce(function(previous,current,index) {
+    return previous+current.field3;
+  },0);
+}
 
 </script>
