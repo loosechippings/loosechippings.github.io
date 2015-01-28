@@ -46,11 +46,16 @@ body {
 </style>
 <body>
 
+<p id="yesterday">yesterday</p>
+<p id="today">today</p>
+
 <script src="http://d3js.org/d3.v3.js"></script>
 <script>
 
+
+var startOfToday=getStartOfDay(new Date())
 var uriDateFormat=d3.time.format("%Y-%m-%d %H:%M:%S");
-var startDate=getStartOfDay(new Date());
+var startDate=startOfToday;
 var endDate=d3.time.day.offset(startDate,1);
 
 var margin = {top: 20, right: 20, bottom: 30, left: 50},
@@ -105,25 +110,14 @@ URL=URL+encodeStartAndEndDates(startDate,endDate);
 
 d3.json(URL, function(error, jsondata) {
 
-  data=jsondata.feeds;
+  var data=jsondata.feeds;
 
-  data.forEach(function(d) {
-    d.created_at = parseDate(d.created_at);
-    d.field1 = +d.field1;
-    d.field2 = +d.field2;
-    d.field3 = +d.field3;
-  });
+  prepareData(data);
 
-  calculateTotalMinutes(data);
+  addXAxis(startDate,endDate);
 
-  x.domain([startDate,endDate]);
   y.domain([-5,20]);
   boiler_y.domain([0,1]);
-
-  svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
 
   svg.append("g")
       .attr("class", "y axis")
@@ -146,22 +140,93 @@ d3.json(URL, function(error, jsondata) {
       .style("text-anchor", "end")
       .text("Boiler");
 
-  svg.append("path")
+  addGraphElements(data);
+
+  addTips(data);
+
+  todayText=d3.select("body")
+    .append("p")
+    .attr("class","summary")
+    .text("test");
+
+  todayText.text("minutes today "+calculateTotalMinutes(data));
+});
+
+d3.select('#yesterday').on("click", function() {
+  var start=d3.time.day.offset(startOfToday,-1);
+  var end=startOfToday;
+  refresh("Yesterday",start,end);
+});
+
+d3.select('#today').on('click', function() {
+  var start=startOfToday;
+  var end=d3.time.day.offset(startOfToday,1);
+  refresh("Today",start,end);
+})
+
+function refresh(label,start,end) {
+  var URL="https://api.thingspeak.com/channels/23684/feed.json?key=UZNQFPQFAG9A58ZG&";
+  URL=URL+encodeStartAndEndDates(start,end);
+
+  d3.json(URL, function(error, jsondata) {
+    var data=jsondata.feeds;
+
+    prepareData(data);
+
+    addXAxis(start,end);
+
+    addGraphElements(data);
+
+    addTips(data);
+
+    todayText.text("minutes today "+calculateTotalMinutes(data));
+
+  });
+}
+
+function addXAxis(start,end) {
+    x.domain([start,end]);
+ 
+    svg.select(".x.axis")
+      .remove();
+
+    svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+}
+
+function addGraphElements(data) {
+    svg.selectAll(".line")
+      .remove();
+
+    svg.selectAll(".boiler_line")
+      .remove();
+
+    svg.selectAll(".area")
+      .remove();
+
+    svg.append("path")
       .datum(data)
       .attr("class", "line")
       .attr("d", line);
 
-  svg.append("path")
+    svg.append("path")
       .datum(data)
       .attr("class", "boiler_line")
       .attr("d", boiler_line);
 
-  svg.append("path")
+    svg.append("path")
       .datum(data)
       .attr("class","area")
       .attr("d",boiler_area);
+}
 
-  nodes=svg.selectAll(".node").data(data).enter().append("g")
+function addTips(data) {
+    d3.selectAll(".node")
+      .remove();
+
+    nodes=svg.selectAll(".node").data(data).enter().append("g")
     .attr("transform",function(d) {
       return "translate("+x(d.created_at)+","+y(d.field1)+")";
     })
@@ -185,17 +250,16 @@ d3.json(URL, function(error, jsondata) {
     .attr("cx",-2)
     .attr("cy",-2)
     .attr("r",5);
+}
 
-
-  todayText=d3.select("body")
-    .append("p")
-    .attr("class","summary")
-    .text("test");
-
-  var foo=calculateTotalMinutes(data);
-
-  todayText.text("minutes today "+calculateTotalMinutes(data));
-});
+function prepareData(data) {
+  data.forEach(function(d) {
+    d.created_at = parseDate(d.created_at);
+    d.field1 = +d.field1;
+    d.field2 = +d.field2;
+    d.field3 = +d.field3;
+  });
+}
 
 function getStartOfDay(d) {
   d.setHours(0);
