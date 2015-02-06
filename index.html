@@ -24,7 +24,7 @@ body {
   stroke-width: 1.5px;
 }
 
-.area {
+.area,.bar {
   fill: #FF3300;
   fill-opacity: 0.4;
   stroke: none;
@@ -46,8 +46,9 @@ body {
 </style>
 <body>
 
-<p id="yesterday">yesterday</p>
-<p id="today">today</p>
+  <div id="historical-graph"></div>
+
+</body>
 
 <script src="http://d3js.org/d3.v3.js"></script>
 <script>
@@ -105,10 +106,10 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var URL="https://api.thingspeak.com/channels/23684/feed.json?key=UZNQFPQFAG9A58ZG&";
-URL=URL+encodeStartAndEndDates(startDate,endDate);
+var baseURL="https://api.thingspeak.com/channels/23684/feed.json?key=UZNQFPQFAG9A58ZG&",
+    singleDayURL=baseURL+encodeStartAndEndDates(startDate,endDate);
 
-d3.json(URL, function(error, jsondata) {
+d3.json(singleDayURL, function(error, jsondata) {
 
   var data=jsondata.feeds;
 
@@ -152,23 +153,11 @@ d3.json(URL, function(error, jsondata) {
   todayText.text("minutes today "+calculateTotalMinutes(data));
 });
 
-d3.select('#yesterday').on("click", function() {
-  var start=d3.time.day.offset(startOfToday,-1);
-  var end=startOfToday;
-  refresh("Yesterday",start,end);
-});
-
-d3.select('#today').on('click', function() {
-  var start=startOfToday;
-  var end=d3.time.day.offset(startOfToday,1);
-  refresh("Today",start,end);
-})
-
 function refresh(label,start,end) {
-  var URL="https://api.thingspeak.com/channels/23684/feed.json?key=UZNQFPQFAG9A58ZG&";
-  URL=URL+encodeStartAndEndDates(start,end);
+  var singleDayURL="https://api.thingspeak.com/channels/23684/feed.json?key=UZNQFPQFAG9A58ZG&";
+  singleDayURL=singleDayURL+encodeStartAndEndDates(start,end);
 
-  d3.json(URL, function(error, jsondata) {
+  d3.json(singleDayURL, function(error, jsondata) {
     var data=jsondata.feeds;
 
     prepareData(data);
@@ -274,9 +263,10 @@ function encodeStartAndEndDates(startDate,endDate) {
 }
 
 function calculateTotalMinutes(data) {
-  return data.reduce(function(previous,current,index) {
+ return data.reduce(function(previous,current,index) {
     return previous+current.field3;
   },0);
 }
 
 </script>
+<script src="historical-graph.js"></script>
