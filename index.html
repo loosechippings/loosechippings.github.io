@@ -9,6 +9,8 @@ body {
 .summary {
   font: 36px sans-serif;
   text-align: left;
+  font-weight: normal;
+  margin-left: 20px;
 }
 
 .axis path,
@@ -61,7 +63,7 @@ var endDate=d3.time.day.offset(startDate,1);
 
 var margin = {top: 20, right: 20, bottom: 30, left: 50},
     width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    height = 400 - margin.top - margin.bottom;
 
 var parseDate = d3.time.format("%Y-%m-%dT%XZ").parse;
 
@@ -146,11 +148,11 @@ d3.json(singleDayURL, function(error, jsondata) {
   addTips(data);
 
   todayText=d3.select("body")
-    .append("p")
+    .append("h1")
     .attr("class","summary")
     .text("test");
 
-  todayText.text("minutes today "+calculateTotalMinutes(data));
+  todayText.text(calculateTotalMinutes(data)+" minutes");
 });
 
 function refresh(label,start,end) {
@@ -168,7 +170,7 @@ function refresh(label,start,end) {
 
     addTips(data);
 
-    todayText.text("minutes today "+calculateTotalMinutes(data));
+    todayText.text(calculateTotalMinutes(data)+" minutes");
 
   });
 }
