@@ -74,6 +74,9 @@ d3.json(hist.historySumURL, function(error, jsondata) {
       var d=parseDate(d.created_at);
       console.log(d);
       refresh("foo",d,d3.time.day.offset(d,1));
+      d3.select(hist.styled).style("fill","#FF3300");
+      d3.select(this).style("fill","green");
+      hist.styled=this;
     });
 
 });
