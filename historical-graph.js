@@ -41,6 +41,10 @@ hist.yaxis=d3.svg.axis()
 d3.json(hist.historySumURL, function(error, jsondata) {
   var data=jsondata.feeds;
 
+  data.forEach(function(d) {
+    d.field3=+d.field3;
+  });
+
   hist.y.domain([0,d3.max(data,function(d) {return d.field3})]);
 
   hist.svg.append("g")
@@ -72,11 +76,13 @@ d3.json(hist.historySumURL, function(error, jsondata) {
     })
     .on("click",function(d) {
       var d=parseDate(d.created_at);
-      console.log(d);
       refresh("foo",d,d3.time.day.offset(d,1));
       d3.select(hist.styled).style("fill","#FF3300");
       d3.select(this).style("fill","green");
       hist.styled=this;
+    })
+    .on("mouseover",function(d) {
+      console.log(d.field3);
     });
 
 });
